@@ -8,8 +8,7 @@ public class Main {
             Utils.argHandler(args, programInitParameters);
         } catch (IOException exception) {
             System.out.println(exception.getMessage());
+            System.exit(0);
         }
-
-
     }
 }

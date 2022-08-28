@@ -3,20 +3,22 @@ import java.io.IOException;
 public class Utils {
     public static void argHandler(String[] args, ProgramInitParameters programInitParameters) throws IOException {
         int index = 0;
-        if (args[0].startsWith("-") && args[0].length() == 2) {
+        if (isKey(args[0])) {
             keysHandler(args[0], programInitParameters);
 
             index++;
-            if (args[1].startsWith("-") && args[1].length() == 2) {
+            if (isKey(args[1])) {
                 keysHandler(args[1], programInitParameters);
                 index++;
             }
-        } else {
-            throw new IOException("Не введён ключ определения типа данных для начала работы программы.");
         }
 
         if (programInitParameters.getSortType() == null) {
-            programInitParameters.setSortType(Type.Integer);
+            throw new IOException("Не введён ключ определения типа данных для начала работы программы.");
+        }
+
+        if (programInitParameters.getSortOrder() == null) {
+            programInitParameters.setSortOrder(Order.Ascend);
         }
 
         while (index < args.length) {
@@ -34,6 +36,14 @@ public class Utils {
 
             index++;
         }
+
+        if (programInitParameters.getOutputFileName() == null) {
+            throw new IOException("Ошибка: отсутствует имя конечного файла в аргументах вызова программы.");
+        }
+
+        if (programInitParameters.getInputFileNames().size() == 0) {
+            throw new IOException("Ошибка: отсутствуют имена файлов в аргументах вызова программы.");
+        }
     }
 
     public static Boolean isKey(String arg) {
@@ -43,7 +53,13 @@ public class Utils {
     public static void keysHandler(String arg, ProgramInitParameters programInitParameters) {
         if (arg.equals("-i") || arg.equals("-s"))
         {
-            checkSortType(arg, programInitParameters);
+            if (programInitParameters.getSortType() == null)
+            {
+                checkSortType(arg, programInitParameters);
+            } else {
+                System.out.println("Предупреждение: введён ключ определения типа входных данных, " +
+                        "при уже установленном типе данных. Ключ '" + arg + "игнорируется.");
+            }
         } else if (arg.equals("-a") || arg.equals("-d")) {
             checkSortOrder(arg, programInitParameters);
         }
@@ -59,7 +75,6 @@ public class Utils {
                 programInitParameters.setSortType(Type.String);
                 break;
         }
-
     }
 
     public static void checkSortOrder(String arg, ProgramInitParameters programInitParameters) {
@@ -72,6 +87,5 @@ public class Utils {
                 programInitParameters.setSortOrder(Order.Decrease);
                 break;
         }
-
     }
 }
