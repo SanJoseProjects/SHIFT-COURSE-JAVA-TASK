@@ -107,6 +107,8 @@ public class MergeSort {
 
             chunkIndex++;
         } while (!endOfAllFiles(fileIsNotEnded));
+
+        squashChunks(chunkIndex, programInitParameters.getOutputFileName());
     }
 
     public static boolean endOfAllFiles(ArrayList<Boolean> statuses) {
@@ -154,6 +156,24 @@ public class MergeSort {
             fileStatus.set(index, false);
 
         return data;
+    }
+
+    public static void squashChunks(int num, String outFile) throws IOException {
+        FileWriter fw = new FileWriter(outFile);
+        PrintWriter pw = new PrintWriter(fw);
+
+        for (int i = 0; i < num; i++)
+        {
+            Path chunk = Path.of("/chunks/chunk-" + i + ".txt");
+            BufferedReader reader = Files.newBufferedReader(chunk);
+
+            String line = "";
+
+            while((line = reader.readLine()) != null) {
+                pw.println(line);
+            }
+        }
+        pw.close();
     }
 
     public static boolean isInteger(String str) {
